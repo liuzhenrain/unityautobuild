@@ -1,3 +1,4 @@
+# !/usr/bin/python
 # -*- coding=utf8 -*-
 import platform
 import os
@@ -40,3 +41,5 @@ if __name__ == "__main__":
     sourcePath = json_obj["project_path"]
     if len(sourcePath) > 0:
         parse.parse_value(inputValue, sourcePath.strip())
+    else:
+        print "没有配置项目地址"

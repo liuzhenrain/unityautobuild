@@ -1,4 +1,5 @@
 # -*- coding=utf8 -*-
+# !/usr/bin/python
 
 import os
 import sys
@@ -20,7 +21,7 @@ class PackMajia:
                     "ViewConfig",
                     "Define.lua",
                     "ScreenMask.lua",
-                    "GameMgrLua", "PokerItem", "ScrollView","ViewPay.lua"]
+                    "GameMgrLua"]
     _exp = ".lua"
 
     def __init__(self, path):
@@ -33,9 +34,13 @@ class PackMajia:
         path_array.append("LuaScript")
         lua_path = os.sep.join(path_array)
         self._allLuaFiles = []
-        self.get_all_files(lua_path, self._allLuaFiles, ".lua")
-        self.change_prefab_name()
-        self.replace_file_name()
+        if os.path.exists(lua_path):
+            self.get_all_files(lua_path, self._allLuaFiles, ".lua")
+            self.change_res_name(".prefab")
+            self.change_res_name(".ogg")
+            self.replace_file_name()
+        else:
+            print("路径配置错误，应该是 Unity 项目的根目录，错误路径",self._sourcePath)
 
     def get_all_files(self, dir_path, file_array, exp):
         """
@@ -102,22 +107,23 @@ class PackMajia:
             else:
                 print "不包含文件", fi
 
-    def change_prefab_name(self):
+    def change_res_name(self, exp):
         path_array = self._sourcePath.split(os.sep)
         path_array.append("Assets")
         path_array.append("Res")
         path = os.sep.join(path_array)
-        prefab_array = []
-        self.get_all_files(path, prefab_array, ".prefab")
+        res_array = []
+        self.get_all_files(path, res_array, exp)
         m1 = md5.new()
-        for name in prefab_array:
+        for name in res_array:
             time = os.times()[4]
-            print "Change prefab:", name
+            print "Change res:", name
             baseName = os.path.basename(name)
             dirName = os.path.dirname(name)
             os.chdir(dirName)
             md5Str = baseName.split('.')[0] + time.__str__()
             m1.update(md5Str.encode(encoding="utf8"))
-            newName = "y" + m1.hexdigest() + ".prefab"
+            newName = "y" + m1.hexdigest() + exp
             os.rename(name, newName)
             self.change_file_str(baseName, newName)
+
