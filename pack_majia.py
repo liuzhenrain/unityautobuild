@@ -37,10 +37,10 @@ class PackMajia:
         if os.path.exists(lua_path):
             self.get_all_files(lua_path, self._allLuaFiles, ".lua")
             self.change_res_name(".prefab")
-            self.change_res_name(".ogg")
+            self.change_ogg_name()
             self.replace_file_name()
         else:
-            print("路径配置错误，应该是 Unity 项目的根目录，错误路径",self._sourcePath)
+            print("路径配置错误，应该是 Unity 项目的根目录，错误路径", self._sourcePath)
 
     def get_all_files(self, dir_path, file_array, exp):
         """
@@ -121,9 +121,44 @@ class PackMajia:
             baseName = os.path.basename(name)
             dirName = os.path.dirname(name)
             os.chdir(dirName)
-            md5Str = baseName.split('.')[0] + time.__str__()
+            if exp == ".ogg":
+                md5Str = baseName.split('.')[0]
+            else:
+                md5Str = baseName.split('.')[0] + time.__str__()
             m1.update(md5Str.encode(encoding="utf8"))
             newName = "y" + m1.hexdigest() + exp
             os.rename(name, newName)
             self.change_file_str(baseName, newName)
 
+    def change_ogg_name(self):
+        path_array = self._sourcePath.split(os.sep)
+        path_array.append("Assets")
+        path_array.append("Res")
+        path = os.sep.join(path_array)
+        res_array = []
+        self.get_all_files(path, res_array, ".ogg")
+        m1 = md5.new()
+        ogg_table = []
+        for name in res_array:
+            time = os.times()[4]
+            print "Change ogg:", name
+            baseName = os.path.basename(name)
+            dirName = os.path.dirname(name)
+            os.chdir(dirName)
+            newName = ""
+            hasName = False
+            for v in ogg_table:
+                if baseName == v[0]:
+                    print "已有同名文件",baseName,v[1]
+                    hasName = True
+                    newName = v[1]
+            if not hasName:
+                md5Str = baseName.split('.')[0]+time.__str__()
+                m1.update(md5Str.encode(encoding="utf8"))
+                newName = "y" + m1.hexdigest()+".ogg"
+                item=[]
+                item.append(baseName)
+                item.append(newName)
+                ogg_table.append(item)
+                self.change_file_str(baseName, newName)
+            os.rename(name, newName)
