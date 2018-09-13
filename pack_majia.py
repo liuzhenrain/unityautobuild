@@ -119,6 +119,8 @@ class PackMajia:
             time = os.times()[4]
             print "Change res:", name
             baseName = os.path.basename(name)
+            if baseName.lower() == "UIVersionUpdate.prefab".lower():
+                continue
             dirName = os.path.dirname(name)
             os.chdir(dirName)
             if exp == ".ogg":

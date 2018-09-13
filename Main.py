@@ -7,6 +7,7 @@ from pack_majia import PackMajia
 import json
 from flashtext import KeywordProcessor
 
+
 class parse_input_value:
     """
     处理传入的内容,根据内容确定要执行的逻辑
@@ -23,11 +24,12 @@ class parse_input_value:
 
 
 if __name__ == "__main__":
-    # sysname = platform.system()
-    # if sysname == "Darwin":
-    #     os.system("ls -al ~")
-    # elif sysname == "Windows":
-    #     os.system("dir ./")
+    isMac = False
+    sysname = platform.system()
+    if sysname == "Darwin":
+        isMac = True
+    elif sysname == "Windows":
+        isMac = False
 
     # inputValue = raw_input("1. ios马甲包打包,2. 安卓完整打包 3. 安卓补丁包 4. IOS 补丁包: ")
     # sourcePath = raw_input("项目的根目录地址,需要完整地址:")
@@ -40,6 +42,15 @@ if __name__ == "__main__":
     inputValue = "1"
     sourcePath = json_obj["project_path"]
     if len(sourcePath) > 0:
-        parse.parse_value(inputValue, sourcePath.strip())
+        os.chdir(sourcePath)
+        os.chdir(os.path.pardir)
+        # parentPath = os.path.pardir(sourcePath)
+        targetPath = "hunxiao_" + os.times()[4].__str__()
+        print "拷贝新目录",targetPath
+        if isMac:
+            os.system("cp -R {0} {1}".format(sourcePath, targetPath))
+        else:
+            os.system("")
+        parse.parse_value(inputValue, os.path.abspath(targetPath))
     else:
         print "没有配置项目地址"
