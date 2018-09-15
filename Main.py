@@ -2,10 +2,8 @@
 # -*- coding=utf8 -*-
 import platform
 import os
-import string
 from pack_majia import PackMajia
 import json
-from flashtext import KeywordProcessor
 
 
 class parse_input_value:
@@ -54,3 +52,4 @@ if __name__ == "__main__":
         parse.parse_value(inputValue, os.path.abspath(targetPath))
     else:
         print "没有配置项目地址"
+        exit()
