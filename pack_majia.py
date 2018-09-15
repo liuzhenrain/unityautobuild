@@ -2,8 +2,6 @@
 # !/usr/bin/python
 
 import os
-import sys
-import io
 import md5
 from flashtext import KeywordProcessor
 
