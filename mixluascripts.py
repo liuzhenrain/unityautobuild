@@ -77,7 +77,7 @@ def mix_lua(path):
         if willcontinue:
             continue
         else:
-            print "正在处理文件", filePath
+            print u"正在处理文件", filePath
             with open(filePath, "r+") as fi:
                 lines = fi.readlines()
                 fi.seek(0, 0)
