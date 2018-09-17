@@ -4,6 +4,7 @@
 import os
 import md5
 from flashtext import KeywordProcessor
+import mixcsharp,mixluascripts
 
 
 class PackMajia:
@@ -30,10 +31,14 @@ class PackMajia:
         path_array.append("Assets")
         path_array.append("Lua")
         path_array.append("LuaScript")
-        lua_path = os.sep.join(path_array)
+        lua_path = self._sourcePath+os.sep+os.sep.join(["Assets","Lua","LuaScript"])
+        mixluascripts.mix_lua(lua_path)
+        csharpPath = self._sourcePath+os.sep+os.sep.join(["Assets","CScripts"])
+        mixcsharp.mix_csharp(csharpPath)
         self._allLuaFiles = []
         if os.path.exists(lua_path):
             self.get_all_files(lua_path, self._allLuaFiles, ".lua")
+
             self.change_res_name(".prefab")
             self.change_ogg_name()
             self.replace_file_name()

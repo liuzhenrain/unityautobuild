@@ -13,36 +13,27 @@ ignore_array = ["ToLua"]
 """
 valueTypeArray = ["int", "string", "float", "bool"]
 """:type:list[str]"""
-gyreArray = ["private", "public", "protect"]
-
-
-def __addFunc():
-    print "添加方法"
-    gyrestr = random.choice(["public", "private"])
-
-
-def _createCodeName(firstUp=False):
-    count = random.randint(3, 10)
-    codeName = random.sample(string.ascii_lowercase, count)
-    resStr = ""
-    if firstUp:
-        firstChar = "".join(random.sample(string.ascii_uppercase, 1))
-        resStr = firstChar + "" + "".join(codeName)
-    else:
-        resStr = "".join(codeName)
-    return resStr
+gyreArray = ["private", "public", "protected"]
 
 
 def _createValue(gy=True, count=1):
+    """
+    自动生成属性定义，自定义前面是否带有访问修饰符，如果不带有访问修饰符，int 类型会自动生成一个 if 判定函数
+    :param gy: 是否带有访问修饰符
+    :param count: 数量
+    :return:
+    """
     gyreStr = ""
     resStr = ""
     for i in range(0, count):
         if gy:
             gyreStr = random.choice(gyreArray)
-        codeName = _createCodeName(True)
+        codeName = common.createCodeName(True)
         vtype = random.choice(valueTypeArray)
         if vtype == "int":
             resStr += "\t%s %s %s = %d;\n" % (gyreStr, vtype, codeName, random.randint(100, 1000000))
+            if not gy:
+                resStr += _funcIf(codeName, True)
         if vtype == "float":
             resStr += "\t%s %s %s = %df;\n" % (gyreStr, vtype, codeName, random.randint(100, 1000000))
         if vtype == "string":
@@ -52,7 +43,52 @@ def _createValue(gy=True, count=1):
     return resStr
 
 
-print _createValue(True, 10)
+def _createParam(count=1):
+    resStr = []
+    for i in range(0, count):
+        codeName = common.createCodeName(False)
+        vtype = random.choice(valueTypeArray)
+        resStr.append("%s %s" % (vtype, codeName))
+    return ",".join(resStr)
+
+
+def _funcIf(value, ifCon=False):
+    fconStr = ""
+    if ifCon:
+        fconStr = _createValue(False)
+    resStr = """
+    if(%s == %d){
+    %s
+    }
+    """ % (value, random.randint(20, 1000), fconStr)
+    return resStr
+
+
+def funcFor():
+    valueStr = common.createCodeName(False)
+    resStr = """
+    for(int %s = 0; %s < %d; %s++){
+        %s
+    }
+    """ % (valueStr, valueStr, random.randint(10, 100), valueStr, _createValue(False, 5))
+    return resStr
+
+
+def _createFunc(count=1):
+    resStr = ""
+    for i in range(0, count):
+        gyreStr = random.choice(gyreArray)
+        funcName = common.createCodeName(True)
+        valueStr = _createValue(False, 5)
+        forStr = funcFor()
+
+        funcStr = """
+        %s void %s (%s){
+            %s
+        }
+        """ % (gyreStr, funcName, _createParam(random.randint(0, 5)), valueStr + "\n" + forStr)
+        resStr += (funcStr + "\n")
+    return resStr
 
 
 def mix_csharp(path):
@@ -65,17 +101,31 @@ def mix_csharp(path):
     for filePath in csharp_files:
         willcontinue = False
         for ignore in ignore_array:
-            if filePath.lower().__contains__(ignore):
+            if filePath.lower().__contains__(ignore.lower()):
                 willcontinue = True
         if willcontinue:
             continue
         else:
+            os.chdir(os.path.dirname(filePath))
+            filename = os.path.basename(filePath).replace(".cs", "")
+            value_str = _createValue(True, random.randint(3, 15))
+            funcStrs = _createFunc(random.randint(1, 3))
+            addcodestr = value_str + "\n" + funcStrs
+            print "打开的cs脚本名称", filePath
             with open(filePath, "r+") as fi:
                 content = fi.read()
-                se = re.search(".*public.*class.*%s.*{" % (os.path.basename(filePath).split('.')[0]), content).group()
-                getPos = content.find(se)
-                if getPos != -1:
-                    content = content[:getPos + len(se)] + '\n' + addcodestr + content[getPos + len(se):]
-                    fi.write(content)
-                    tips = '代码：添加成功,%s.cs' % (filePath)
-                    print(tips)
+                se = re.search(".*public.*class.*%s.*{" % (filename), content)
+                if not se:
+                    se = re.search(".*public.*class.*%s.*\n.*{" % (filename), content)
+                if se:
+                    segroup = se.group()
+                    if segroup.lstrip().startswith("//") or segroup.lstrip().startswith("/*") or segroup.strip().__contains__("static"):
+                        continue
+                    getPos = content.find(segroup)
+                    if getPos != -1:
+                        content = content[:getPos + len(segroup)] + '\n' + addcodestr + content[getPos + len(segroup):]
+                        fi.seek(0, 0)
+                        fi.write(content)
+                        print u'代码添加成功,%s.cs' % (filePath)
+                else:
+                    print "脚本很奇怪", filePath

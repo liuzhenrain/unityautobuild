@@ -4,6 +4,7 @@ import platform
 import os
 from pack_majia import PackMajia
 import json
+import time
 
 
 class parse_input_value:
@@ -42,8 +43,8 @@ if __name__ == "__main__":
     if len(sourcePath) > 0:
         os.chdir(sourcePath)
         os.chdir(os.path.pardir)
-        # parentPath = os.path.pardir(sourcePath)
-        targetPath = "hunxiao_" + os.times()[4].__str__()
+        baseName = os.path.basename(sourcePath)
+        targetPath = baseName+"_Mix_" + time.strftime("%m-%d_%H-%M", time.localtime())
         print "拷贝新目录",targetPath
         if isMac:
             os.system("cp -R {0} {1}".format(sourcePath, targetPath))
