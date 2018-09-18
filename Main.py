@@ -31,7 +31,7 @@ def deleteUnExsitFolder(path):
         realPath = os.path.join(path, _file)
         dontremove = False
         for pack_name in json_obj["pack_game"]:
-            if realPath.__contains__(pack_name):
+            if realPath.__contains__(pack_name.split('/')[-1]):
                 dontremove = True
         if not dontremove:
             print "即将删除文件/文件夹", realPath
@@ -49,12 +49,7 @@ if __name__ == "__main__":
     elif sysname == "Windows":
         isMac = False
 
-    # inputValue = raw_input("1. ios马甲包打包,2. 安卓完整打包 3. 安卓补丁包 4. IOS 补丁包: ")
-    # sourcePath = raw_input("项目的根目录地址,需要完整地址:")
-    # json_obj=[]
-    print os.getcwd()
     with open("config.json", "r") as fi:
-        # print fi.read()
         json_obj = json.load(fi, encoding="utf8")
 
     inputValue = "1"
@@ -64,15 +59,12 @@ if __name__ == "__main__":
         os.chdir(os.path.pardir)
         baseName = os.path.basename(sourcePath)
         targetPath = os.getcwd() + os.sep + baseName + "_Mix_" + time.strftime("%m-%d_%H-%M", time.localtime())
-        if not json_obj["jump_folder_copy"]:
-            print "拷贝新目录", targetPath
-            if isMac:
-                os.system("cp -R {0} {1}".format(sourcePath, targetPath))
-            else:
-                os.system("")
+        print "拷贝新目录", targetPath
+        if isMac:
+            os.system("cp -R {0} {1}".format(sourcePath, targetPath))
         else:
-            targetPath = sourcePath
-            print "跳过目录拷贝"
+            os.system("")
+
         print "target path:",targetPath
         subRes = os.path.join(targetPath, "Assets/Res/SubGames")
         deleteUnExsitFolder(subRes)
@@ -82,13 +74,12 @@ if __name__ == "__main__":
             majia_build = PackMajia(targetPath)
             majia_build.pack()
         else:
-            targetPath = sourcePath
             print "跳过混淆，直接打包"
         if json_obj["auto_pack"]:
             print "开始打包"
             print targetPath, os.path.abspath(targetPath)
             export = ExportProj(targetPath, json_obj)
-            export.genProject(targetPath)
+            export.genProject()
 
 
     else:

@@ -23,9 +23,9 @@ class ExportProj:
         self._jsonobj = jsonobj
         self._logpath = self._sourcePath + os.sep + "exportlog.log"
         self._batchcmd = [self._jsonobj["unity_path"], '-batchmode', '-projectPath',
-                          self._sourcePath, '-nographics',
+                          self._sourcePath,
                           '-executeMethod', "CommandTool.GenWrapFiles",
-                          '-logFile', self._logpath, '-quit']
+                          '-logFile', self._logpath, '-quit', "-nographics"]
 
     def _unity_log_tail(self, txt):
         # log = txt.split("\n")
@@ -50,13 +50,13 @@ class ExportProj:
         print self._batchcmd
 
         # new thread to tail log file
-        thread.start_new_thread(self._tail_thread, (self._logpath,))
+        # thread.start_new_thread(self._tail_thread, (self._logpath,))
 
         os.system(" ".join(self._batchcmd))
         # process = subprocess.Popen(self._batchcmd,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,cwd=self._sourcePath)
         time.sleep(5)
         print "Gen wrap files all"
-        self._batchcmd[6] = "CommandTool.GenWrapAll"
+        self._batchcmd[5] = "CommandTool.GenWrapAll"
 
         os.system(" ".join(self._batchcmd))
 
@@ -64,40 +64,43 @@ class ExportProj:
 
     def _buildGameAssets(self, key):
         print u"开始打包 %s 资源" % key
-        self._batchcmd[6] = "CommandTool.BuildAssets"
+        self._batchcmd[5] = "CommandTool.BuildAssets"
         if os.path.exists(self._logpath):
             os.remove(self._logpath)
         batchcmd = copy.deepcopy(self._batchcmd)
         batchcmd.append("-platform ios -name %s" % key)
-        print " ".join(self._batchcmd)
-        thread.start_new_thread(self._tail_thread, (self._logpath,))
-        os.system(" ".join(self._batchcmd))
+        # thread.start_new_thread(self._tail_thread, (self._logpath,))
+        os.system(" ".join(batchcmd))
         # process = subprocess.Popen(batchcmd,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,cwd=self._sourcePath)
         print u"%s 资源打包完成" % key
 
-    def genProject(self, basename):
-        print u"开始进行打包工作", self._jsonobj["project_path"]
-        # print "Gen Wrap Files"
-        # self._genWrapFiles()
-        # self._buildGameAssets("Main")
-        # time.sleep(5)
-        # for key in self._jsonobj["pack_game"]:
-        #     self._buildGameAssets(key)
-        #     time.sleep(5)
-        # time.sleep(5)
-        print "开始导出Xcode项目",self._sourcePath
-        os.system("cd %s" % self._sourcePath + os.sep + "Assets")
-        os.system("mkdir StreamingAssets")
+    def genProject(self):
+        print u"开始进行打包工作", self._jsonobj["project_path"], self._sourcePath
+        if not self._jsonobj["jump_mix"]:
+            self._genWrapFiles()
+            time.sleep(5)
+        self._buildGameAssets("Main")
+        time.sleep(5)
+        for key in self._jsonobj["pack_game"]:
+            self._buildGameAssets(key)
+            time.sleep(5)
+        time.sleep(5)
+        print "开始导出Xcode项目", self._sourcePath
+        assetPath = os.path.join(self._sourcePath, "Assets")
+        os.chdir(assetPath)
+        os.system("mkdir %s/StreamingAssets" % assetPath)
         os.system("mv Res_* StreamingAssets")
-        os.system("cd StreamingAssets")
-        os.system("find ./ -name '*.zip' -exec tar xf {} \\; -print")
+        os.chdir(assetPath + os.sep + "StreamingAssets")
+        os.system("find . -name '*.zip' -exec tar xf {} \\; -print")
         os.system("rm -f Res_*")
         batchcmd = copy.deepcopy(self._batchcmd)
-        batchcmd[6] = "CommandTool.BuildXCode"
-        print self._sourcePath
+        batchcmd[5] = "CommandTool.BuildXCode"
         os.chdir(self._sourcePath)
-        xcodepath = os.path.pardir + os.sep + basename + "_XCode"
+        basename = os.path.basename(self._sourcePath)
+        xcodepathparent = os.path.abspath(os.path.dirname(self._sourcePath))
+        xcodepath = os.path.join(xcodepathparent, basename + "_XCode")
         smallgames = "|".join(self._jsonobj["pack_game"])
-        print xcodepath, smallgames
+        print "XcodePath", xcodepath, "SmallGames", smallgames
         batchcmd.append(u"-xcodepath %s -smallgames %s" % (xcodepath, smallgames))
-        print " ".join(batchcmd)
+        os.system(" ".join(batchcmd))
+        print "XCode项目导出完成"
