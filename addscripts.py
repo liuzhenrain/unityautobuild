@@ -97,7 +97,7 @@ def AddZhushi(fixurl):
         else:
             f.seek(0, 0)
             f.write('%s\n'%(addzhushistr())+content)
-            tips='注释：添加成功,%s'%(fixurl)
+            tips=u'注释：添加成功,%s'%(fixurl)
             FixLog(tips)
             print(tips)
 def FindDir(url):
@@ -130,12 +130,12 @@ def AddGaurdCode(fixurl,filename):
             content=content[:getpos+len(se)]+'\n'+addcodestr+content[getpos+len(se):]
             fileget=open('%s'%(fixurl),'w')
             fileget.write(content)
-            tips='代码：添加成功,%s.cs'%(fixurl)
+            tips=u'代码：添加成功,%s.cs'%(fixurl)
             FixLog(tips)
             print(tips)
         fileget.close()
     except:
-        print('添加代码错误：'+fixurl)
+        print('添加代码错误：',fixurl)
 
 def FindDirCode(url):
     try:
@@ -159,7 +159,7 @@ def FixLog(textadd):
     addcon='\n%s,%s'%(timeget,textadd)
     if not logfile:
         os.makedirs(path)
-        tips='%s,日志：创建日志文件,%s'%(timeget,filepath)
+        tips=u'%s,日志：创建日志文件,%s'%(timeget,filepath)
         filecr=open(filepath,'w')
         filecr.write(tips+addcon)
         print(tips)

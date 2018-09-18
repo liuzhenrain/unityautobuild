@@ -92,7 +92,7 @@ def _createFunc(count=1):
 
 
 def mix_csharp(path):
-    print "开始对CSharp添加垃圾代码和注释"
+    print u"开始对CSharp添加垃圾代码和注释"
     csharp_files = []
     """
     :type:list[str]

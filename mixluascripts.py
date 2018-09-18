@@ -85,4 +85,4 @@ def mix_lua(path):
                 addcontent = _createFunc(random.randint(1, 3))
                 str = addcontent + "\n" + "".join(lines)
                 fi.write(str)
-                print "混淆已完成", filePath
+                print u"混淆已完成", filePath
