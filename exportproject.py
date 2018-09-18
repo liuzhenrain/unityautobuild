@@ -1,5 +1,5 @@
-# -*- coding=utf8 -*-
 # !/usr/bin/python
+# -*- coding=utf8 -*-
 
 import os
 import subprocess
@@ -44,7 +44,7 @@ class ExportProj:
         t.follow(s=0.1)
 
     def _genWrapFiles(self):
-        print u"开始重新生成 Wrap 文件"
+        print "开始重新生成 Wrap 文件"
         if os.path.exists(self._logpath):
             os.remove(self._logpath)
         print self._batchcmd
@@ -60,10 +60,10 @@ class ExportProj:
 
         os.system(" ".join(self._batchcmd))
 
-        print u"Wrap 文件生成成功"
+        print "Wrap 文件生成成功"
 
     def _buildGameAssets(self, key):
-        print u"开始打包 %s 资源" % key
+        print "开始打包 %s 资源" % key
         self._batchcmd[5] = "CommandTool.BuildAssets"
         if os.path.exists(self._logpath):
             os.remove(self._logpath)
@@ -72,10 +72,10 @@ class ExportProj:
         # thread.start_new_thread(self._tail_thread, (self._logpath,))
         os.system(" ".join(batchcmd))
         # process = subprocess.Popen(batchcmd,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,cwd=self._sourcePath)
-        print u"%s 资源打包完成" % key
+        print "%s 资源打包完成" % key
 
     def genProject(self):
-        print u"开始进行打包工作", self._jsonobj["project_path"], self._sourcePath
+        print "开始进行打包工作"
         if not self._jsonobj["jump_mix"]:
             self._genWrapFiles()
             time.sleep(5)
@@ -85,7 +85,7 @@ class ExportProj:
             self._buildGameAssets(key)
             time.sleep(5)
         time.sleep(5)
-        print u"开始导出Xcode项目", self._sourcePath
+        print "开始导出Xcode项目", self._sourcePath
         assetPath = os.path.join(self._sourcePath, "Assets")
         os.chdir(assetPath)
         os.system("mkdir %s/StreamingAssets" % assetPath)
@@ -101,6 +101,6 @@ class ExportProj:
         xcodepath = os.path.join(xcodepathparent, basename + "_XCode")
         smallgames = "|".join(self._jsonobj["pack_game"])
         print "XcodePath", xcodepath, "SmallGames", smallgames
-        batchcmd.append(u"-xcodepath %s -smallgames %s" % (xcodepath, smallgames))
+        batchcmd.append("-xcodepath %s -smallgames %s" % (xcodepath, smallgames))
         os.system(" ".join(batchcmd))
-        print u"XCode项目导出完成"
+        print "XCode项目导出完成"

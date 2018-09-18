@@ -77,7 +77,7 @@ def mix_lua(path):
         if willcontinue:
             continue
         else:
-            print u"正在处理文件", filePath
+            print "正在处理文件", filePath
             with open(filePath, "r+") as fi:
                 lines = fi.readlines()
                 fi.seek(0, 0)
@@ -85,4 +85,4 @@ def mix_lua(path):
                 addcontent = _createFunc(random.randint(1, 3))
                 str = addcontent + "\n" + "".join(lines)
                 fi.write(str)
-                print u"混淆已完成", filePath
+                print "混淆已完成", filePath
