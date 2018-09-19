@@ -44,7 +44,7 @@ class ExportProj:
         t.follow(s=0.1)
 
     def _genWrapFiles(self):
-        print "开始重新生成 Wrap 文件"
+        print "Start reBuild Wrap Files"
         if os.path.exists(self._logpath):
             os.remove(self._logpath)
         print self._batchcmd
@@ -60,10 +60,10 @@ class ExportProj:
 
         os.system(" ".join(self._batchcmd))
 
-        print "Wrap 文件生成成功"
+        print "Build Wrap Files Complete"
 
     def _buildGameAssets(self, key):
-        print "开始打包 %s 资源" % key
+        print "Start Build %s Assets" % key
         self._batchcmd[5] = "CommandTool.BuildAssets"
         if os.path.exists(self._logpath):
             os.remove(self._logpath)
@@ -72,11 +72,11 @@ class ExportProj:
         # thread.start_new_thread(self._tail_thread, (self._logpath,))
         os.system(" ".join(batchcmd))
         # process = subprocess.Popen(batchcmd,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,cwd=self._sourcePath)
-        print "%s 资源打包完成" % key
+        print "%s Building Complete" % key
 
     def genProject(self):
-        print "开始进行打包工作"
-        if not self._jsonobj["jump_mix"]:
+        print "Build Asssetbundle Starting..."
+        if not self._jsonobj["skip_confuse"]:
             self._genWrapFiles()
             time.sleep(5)
         self._buildGameAssets("Main")
@@ -85,7 +85,7 @@ class ExportProj:
             self._buildGameAssets(key)
             time.sleep(5)
         time.sleep(5)
-        print "开始导出Xcode项目", self._sourcePath
+        print "Export XCodeProject Starting...", self._sourcePath
         assetPath = os.path.join(self._sourcePath, "Assets")
         os.chdir(assetPath)
         os.system("mkdir %s/StreamingAssets" % assetPath)
@@ -103,4 +103,4 @@ class ExportProj:
         print "XcodePath", xcodepath, "SmallGames", smallgames
         batchcmd.append("-xcodepath %s -smallgames %s" % (xcodepath, smallgames))
         os.system(" ".join(batchcmd))
-        print "XCode项目导出完成"
+        print "Export XCodeProject Complete"

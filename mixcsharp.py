@@ -92,7 +92,7 @@ def _createFunc(count=1):
 
 
 def mix_csharp(path):
-    print "开始对CSharp添加垃圾代码和注释"
+    print "Start adding junk code and comments to CSharp"
     csharp_files = []
     """
     :type:list[str]
@@ -111,7 +111,7 @@ def mix_csharp(path):
             value_str = _createValue(True, random.randint(3, 15))
             funcStrs = _createFunc(random.randint(1, 3))
             addcodestr = value_str + "\n" + funcStrs
-            print "打开的cs脚本名称", filePath
+            print "Opening CSharp File:", filePath
             with open(filePath, "r+") as fi:
                 content = fi.read()
                 se = re.search(".*public.*class.*%s.*{" % (filename), content)
@@ -126,6 +126,6 @@ def mix_csharp(path):
                         content = content[:getPos + len(segroup)] + '\n' + addcodestr + content[getPos + len(segroup):]
                         fi.seek(0, 0)
                         fi.write(content)
-                        print '代码添加成功', filePath
+                        print 'Add Code complete:', filePath
                 else:
-                    print "脚本很奇怪", filePath
+                    print "This code file has error:", filePath

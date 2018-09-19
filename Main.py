@@ -34,7 +34,7 @@ def deleteUnExsitFolder(path):
             if realPath.__contains__(pack_name.split('/')[-1]):
                 dontremove = True
         if not dontremove:
-            print "即将删除文件/文件夹", realPath
+            print "Deleting files/folders", realPath
             if os.path.isfile(realPath):
                 os.remove(realPath)
             else:
@@ -59,7 +59,7 @@ if __name__ == "__main__":
         os.chdir(os.path.pardir)
         baseName = os.path.basename(sourcePath)
         targetPath = os.getcwd() + os.sep + baseName + "_Mix_" + time.strftime("%m-%d_%H-%M", time.localtime())
-        print "拷贝新目录", targetPath
+        print "Copy new project folder:", targetPath
         if isMac:
             os.system("cp -R {0} {1}".format(sourcePath, targetPath))
         else:
@@ -70,18 +70,18 @@ if __name__ == "__main__":
         deleteUnExsitFolder(subRes)
         subRes = os.path.join(targetPath, "Assets/Lua/LuaScript/SubGames")
         deleteUnExsitFolder(subRes)
-        if not json_obj["jump_mix"]:
+        if not json_obj["skip_confuse"]:
             majia_build = PackMajia(targetPath)
             majia_build.pack()
         else:
-            print "跳过混淆，直接打包"
+            print "Skip confusion, package directly"
         if json_obj["auto_pack"]:
-            print "开始打包"
+            print "Package Starting"
             print targetPath, os.path.abspath(targetPath)
             export = ExportProj(targetPath, json_obj)
             export.genProject()
 
 
     else:
-        print "没有配置项目地址"
+        print "Don`t configuration Project Path"
         exit()

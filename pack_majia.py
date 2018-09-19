@@ -43,7 +43,7 @@ class PackMajia:
             self.change_ogg_name()
             self.replace_file_name()
         else:
-            print("路径配置错误，应该是 Unity 项目的根目录，错误路径", self._sourcePath)
+            print("Path configuration error, should be the root directory of the Unity project, the wrong path:", self._sourcePath)
 
     def get_all_files(self, dir_path, file_array, exp):
         """
@@ -75,7 +75,7 @@ class PackMajia:
             os.chdir(os.path.dirname(fi))
             file_name_array = fileName.split(".")
             if len(file_name_array) > 2:
-                print "这个文件有问题" + fileName
+                print "This file has problem" + fileName
             else:
                 m1 = md5.new()
                 itemMes = []
@@ -108,7 +108,7 @@ class PackMajia:
                         f.seek(0, 0)
                         f.write(newfileStr)
             else:
-                print "不包含文件", fi
+                print "Does`n exist file:", fi
 
     def change_res_name(self, exp):
         path_array = self._sourcePath.split(os.sep)
@@ -154,7 +154,7 @@ class PackMajia:
             hasName = False
             for v in ogg_table:
                 if baseName == v[0]:
-                    print "已有同名文件",baseName,v[1]
+                    print "Has same name",baseName,v[1]
                     hasName = True
                     newName = v[1]
             if not hasName:
