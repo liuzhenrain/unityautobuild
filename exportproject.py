@@ -8,6 +8,7 @@ import tail
 import thread
 import time
 import copy
+import shutil
 
 
 class ExportProj:
@@ -99,7 +100,12 @@ class ExportProj:
         basename = os.path.basename(self._sourcePath)
         xcodepathparent = os.path.abspath(os.path.dirname(self._sourcePath))
         xcodepath = os.path.join(xcodepathparent, basename + "_XCode")
-        smallgames = "|".join(self._jsonobj["pack_game"])
+        if os.path.exists(xcodepath):
+            print "Has exist xcode folder will be REMOVED."
+            shutil.rmtree(xcodepath)
+        print "Create XCodeProject Folder:", xcodepath
+        os.mkdir(xcodepath)
+        smallgames = "_".join(self._jsonobj["pack_game"])
         print "XcodePath", xcodepath, "SmallGames", smallgames
         batchcmd.append("-xcodepath %s -smallgames %s" % (xcodepath, smallgames))
         os.system(" ".join(batchcmd))
