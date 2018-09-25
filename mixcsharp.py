@@ -6,6 +6,7 @@ import os
 import random
 import string
 import re
+import hashlib
 
 ignore_array = ["ToLua"]
 """
@@ -91,6 +92,39 @@ def _createFunc(count=1):
     return resStr
 
 
+def createCSharp(path, min, max):
+    count = random.randint(min, max)
+    fileTemplate = """
+using System;
+using UnityEngine;
+using System.Text;
+using System.Collections.Generic;
+using System.Collections;
+using System.IO;
+public class %s {
+    private static %s _instance = null;
+    public static %s GetInstance(){
+        if(_instance == null){
+            _instance = new %s();
+        }
+        return _instance;
+    }
+    
+    %s
+}
+    """
+    for index in range(0, count):
+        fileName = "Mix" + common.createCodeName(True) + ".cs"
+        filepath = os.path.join(path, fileName)
+        print "Add CSharp Scripts ->", filepath
+        with open(filepath, "w+") as fi:
+            value_str = _createValue(True, random.randint(3, 15))
+            funcStrs = _createFunc(random.randint(1, 3))
+            addcodestr = value_str + "\n" + funcStrs
+            content = fileTemplate % (fileName, fileName, fileName, addcodestr)
+            fi.write(content)
+
+
 def mix_csharp(path):
     print "Start adding junk code and comments to CSharp"
     csharp_files = []
@@ -111,7 +145,6 @@ def mix_csharp(path):
             value_str = _createValue(True, random.randint(3, 15))
             funcStrs = _createFunc(random.randint(1, 3))
             addcodestr = value_str + "\n" + funcStrs
-            print "Opening CSharp File:", filePath
             with open(filePath, "r+") as fi:
                 content = fi.read()
                 se = re.search(".*public.*class.*%s.*{" % (filename), content)
@@ -129,3 +162,10 @@ def mix_csharp(path):
                         print 'Add Code complete:', filePath
                 else:
                     print "This code file has error:", filePath
+    print "Add CSharp Scripts"
+    os.chdir(path)
+    dirs = os.listdir(path)
+    for dir in dirs:
+        if os.path.isdir(dir):
+            mixc = random.randint(5, 10)
+            createCSharp(os.path.abspath(dir), mixc, mixc + random.randint(1, 10))

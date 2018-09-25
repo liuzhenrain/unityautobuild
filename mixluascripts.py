@@ -5,8 +5,8 @@ import common
 import os
 import random
 import string
-import re
-import copy
+import hashlib
+import time
 
 ignore_array = []
 """
@@ -62,6 +62,20 @@ def _createFunc(count=1):
     return resstr
 
 
+def _createLua(path, minc, maxc):
+    count = random.randint(minc, maxc)
+    for i in range(0, count):
+        codename = common.createCodeName(True)
+        md5 = hashlib.md5()
+        md5.update(codename + time.time().__str__())
+        filename = md5.hexdigest() + ".lua"
+        filepath = os.path.join(path, filename)
+        print "Add Lua File ->", filepath
+        with open(filepath, "w+") as fi:
+            addcontent = _createFunc(random.randint(3, 5))
+            fi.write(addcontent)
+
+
 def mix_lua(path):
     allluafiles = []
     """
@@ -77,7 +91,6 @@ def mix_lua(path):
         if willcontinue:
             continue
         else:
-            print "Processing file", filePath
             with open(filePath, "r+") as fi:
                 lines = fi.readlines()
                 fi.seek(0, 0)
@@ -85,4 +98,13 @@ def mix_lua(path):
                 addcontent = _createFunc(random.randint(1, 3))
                 str = addcontent + "\n" + "".join(lines)
                 fi.write(str)
-                print "Processing complete", filePath
+                print "Confuse Lua complete", filePath
+
+
+def add_lua_files(rootpath):
+    os.chdir(rootpath)
+    dirs = os.listdir(rootpath)
+    for dir in dirs:
+        if os.path.isdir(dir):
+            minc = random.randint(5, 10)
+            _createLua(os.path.abspath(dir), minc, minc + random.randint(1, 5))

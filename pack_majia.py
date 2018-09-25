@@ -4,7 +4,7 @@
 import os
 import md5
 from flashtext import KeywordProcessor
-import mixcsharp,mixluascripts
+import mixcsharp, mixluascripts
 
 
 class PackMajia:
@@ -27,21 +27,18 @@ class PackMajia:
         self._sourcePath = path
 
     def pack(self):
-        path_array = self._sourcePath.split(os.sep)
-        path_array.append("Assets")
-        path_array.append("Lua")
-        path_array.append("LuaScript")
-        lua_path = self._sourcePath+os.sep+os.sep.join(["Assets","Lua","LuaScript"])
+        lua_path = os.path.join(self._sourcePath, "Assets", "Lua", "LuaScript")
         mixluascripts.mix_lua(lua_path)
-        csharpPath = self._sourcePath+os.sep+os.sep.join(["Assets","CScripts"])
+        csharpPath = os.path.join(self._sourcePath, "Assets", "CScripts")
         mixcsharp.mix_csharp(csharpPath)
         self._allLuaFiles = []
         if os.path.exists(lua_path):
             self.get_all_files(lua_path, self._allLuaFiles, ".lua")
 
-            self.change_res_name(".prefab")
-            self.change_ogg_name()
+            # self.change_res_name(".prefab")
+            # self.change_ogg_name()
             self.replace_file_name()
+            mixluascripts.add_lua_files(lua_path)
         else:
             print("Path configuration error, should be the root directory of the Unity project, the wrong path:", self._sourcePath)
 
@@ -154,14 +151,14 @@ class PackMajia:
             hasName = False
             for v in ogg_table:
                 if baseName == v[0]:
-                    print "Has same name",baseName,v[1]
+                    print "Has same name", baseName, v[1]
                     hasName = True
                     newName = v[1]
             if not hasName:
-                md5Str = baseName.split('.')[0]+time.__str__()
+                md5Str = baseName.split('.')[0] + time.__str__()
                 m1.update(md5Str.encode(encoding="utf8"))
-                newName = "y" + m1.hexdigest()+".ogg"
-                item=[]
+                newName = "y" + m1.hexdigest() + ".ogg"
+                item = []
                 item.append(baseName)
                 item.append(newName)
                 ogg_table.append(item)
