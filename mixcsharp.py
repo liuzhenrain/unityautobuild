@@ -114,14 +114,14 @@ public class %s {
 }
     """
     for index in range(0, count):
-        fileName = "Mix" + common.createCodeName(True) + ".cs"
-        filepath = os.path.join(path, fileName)
+        fileName = "Mix" + common.createCodeName(True)
+        filepath = os.path.join(path, fileName + ".cs")
         print "Add CSharp Scripts ->", filepath
         with open(filepath, "w+") as fi:
             value_str = _createValue(True, random.randint(3, 15))
             funcStrs = _createFunc(random.randint(1, 3))
             addcodestr = value_str + "\n" + funcStrs
-            content = fileTemplate % (fileName, fileName, fileName, addcodestr)
+            content = fileTemplate % (fileName, fileName, fileName, fileName, addcodestr)
             fi.write(content)
 
 

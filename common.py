@@ -20,11 +20,23 @@ def get_all_files(dir_path, file_array, exp):
             if _file.endswith(exp):
                 file_array.append(os.path.join(dir_path, _file))
             elif exp == "*":
-                file_array.append(os.path.join(dir_path,_file))
+                file_array.append(os.path.join(dir_path, _file))
         else:
             if _file == ".git":
                 continue
             get_all_files(os.path.join(dir_path, _file), file_array, exp)
+
+
+def get_all_dirs(rootpath):
+    dirArray = []
+    for root, dirs, files in os.walk(rootpath, topdown=True, followlinks=False):
+        # for name in files:
+        #     print "Files->", os.path.join(root, name)
+        for dirname in dirs:
+            abspath = os.path.join(root,dirname)
+            if not abspath.__contains__(".git"):
+                dirArray.append(os.path.join(root, dirname))
+    return dirArray
 
 
 def createCodeName(firstUp=False, focusIgnoreArray=[]):

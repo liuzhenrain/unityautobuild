@@ -14,12 +14,11 @@ def change_assets_md5(path):
     all_files = []
     common.get_all_files(path, all_files, "*")
     for filePath in all_files:
-        with open(filePath, "rb+") as fi:
-            content = fi.read()
-            content = content + "\\" + random.choice(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"])
-            fi.seek(0)
-            fi.truncate()
-            fi.write(content)
+        filename = os.path.splitext(filePath)[1]
+        if filename.lower().endswith(".png") or filename.lower().endswith(".ogg"):
+            content = open(filePath, "rb").read()
+            with open(filePath, "wb") as fi:
+                fi.write(content + random.choice(["\@", "\!", "\#", "\%", "\&"]))
 
 
 def random_color():
@@ -27,7 +26,6 @@ def random_color():
 
 
 def _add_image_thread(folderPath):
-    print "add image thread starting"
     text = random.sample(string.uppercase, random.randint(10, 26))
     sizex = random.choice([32, 64, 128, 256])
     sizey = random.choice([32, 64, 128, 256])
@@ -47,29 +45,28 @@ def _add_image_thread(folderPath):
     md5 = hashlib.md5()
     md5.update(folderPath + "".join(text) + os.times()[4].__str__())
     filepath = os.path.join(folderPath, md5.hexdigest() + ".png")
-    print "save filepath %s " % filepath
+    # print "save filepath %s " % filepath
     im.save(filepath)
-    print "add image thread complete"
+    print "add image thread complete", filepath
 
 
 def add_image(rootFolder):
     print "add images"
-    os.chdir(rootFolder)
-    count = random.randint(5, 20)
-    for i in range(count):
-        t = threading.Thread(target=_add_image_thread(rootFolder))
-        t.start()
-        t.join()
-    folders = os.listdir(rootFolder)
+    # os.chdir(rootFolder)
+    folders = common.get_all_dirs(rootFolder)
     for folder in folders:
-        if os.path.isdir(folder) and folder != ".git":
-            abspath = os.path.abspath(folder)
-            count = random.randint(5, 20)
-            for i in range(count):
-                t = threading.Thread(target=_add_image_thread(abspath))
-                t.start()
-                t.join()
+        abspath = os.path.abspath(folder)
+        count = random.randint(5, 20)
+        for i in range(count):
+            t = threading.Thread(target=_add_image_thread(abspath))
+            t.start()
+            t.join()
 
 
 if __name__ == "__main__":
-    add_image("/Users/kaifa/SharpKnife/WorkSpace/imageaddtest")
+    path = "/Users/kaifa/SharpKnife/WorkSpace/UnityProjects/majia_origin_Mix_09-26_18-53/Assets/Res"
+    dirArray = common.get_all_dirs(path)
+    for dirpath in dirArray:
+        print dirpath
+
+    # add_image("/Users/kaifa/SharpKnife/WorkSpace/imageaddtest")

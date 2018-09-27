@@ -73,21 +73,24 @@ if __name__ == "__main__":
         deleteUnExsitFolder(subRes)
         if not json_obj["skip_confuse"]:
             logpath = os.path.join(targetPath, "confuse.log")
-            print "logpath -> "+ logpath
+            print "logpath -> " + logpath
             subgames = "_".join(json_obj["pack_game"])
             _batchcmd = [json_obj["unity_path"], '-batchmode', '-projectPath',
                          targetPath, '-executeMethod', "ConfuseAssets.MoveRenameAssets",
                          '-logFile', logpath, '-quit', "-nographics", "-subgames", subgames]
             print "Confuse Unity Assets"
-
-            # os.system("tail -5f %s" % logpath)
-            os.system(" ".join(_batchcmd))
+            errcode = os.system(" ".join(_batchcmd))
+            if errcode != 0:
+                quit(1)
             time.sleep(5)
-            # majia_build = PackMajia(targetPath)
-            # majia_build.pack()
-            # asset_path = os.path.join(targetPath, "Assets", "Res")
-            # assetprocess.change_assets_md5(asset_path)
-            # assetprocess.add_image(asset_path)
+            majia_build = PackMajia(targetPath)
+            majia_build.pack()
+            asset_path = os.path.join(targetPath, "Assets", "Res", "MainGame")
+            assetprocess.change_assets_md5(asset_path)
+            asset_path = os.path.join(targetPath, "Assets", "Res", "SubGames")
+            assetprocess.change_assets_md5(asset_path)
+            asset_path = os.path.join(targetPath, "Assets", "Res")
+            assetprocess.add_image(asset_path)
         else:
             print "Skip confusion, package directly"
         if json_obj["auto_pack"]:
@@ -95,8 +98,6 @@ if __name__ == "__main__":
             print targetPath, os.path.abspath(targetPath)
             export = ExportProj(targetPath, json_obj)
             export.genProject()
-
-
     else:
         print "Don`t configuration Project Path"
         exit()
