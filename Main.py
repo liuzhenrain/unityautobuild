@@ -8,6 +8,7 @@ import time
 from exportproject import ExportProj
 import shutil
 import assetprocess
+import sys
 
 
 class parse_input_value:
@@ -81,7 +82,12 @@ if __name__ == "__main__":
             print "Confuse Unity Assets"
             errcode = os.system(" ".join(_batchcmd))
             if errcode != 0:
-                quit(1)
+                try:
+                    sys.exit(0)
+                except:
+                    print "Confuse Unity asset ERROR must check confuse.log file"
+                finally:
+                    os.system("open " + logpath)
             time.sleep(5)
             majia_build = PackMajia(targetPath)
             majia_build.pack()
@@ -100,4 +106,4 @@ if __name__ == "__main__":
             export.genProject()
     else:
         print "Don`t configuration Project Path"
-        exit()
+        sys.exit(0)
